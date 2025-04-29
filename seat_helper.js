@@ -1,5 +1,5 @@
 // seat_helper.js
-const rows = ["A", "B", "C", "D", "E", "F", "G"];
+let rows = ["A", "B", "C", "D", "E", "F", "G"];
 
 function getInitialSeats() {
   // rows can be extended to A-Z but columns are fixed to 10
@@ -30,11 +30,13 @@ function getInitialSeats() {
 
 function getSampleBookingInputs() {
   const bookings = [
-    { name: "b1", size: 1, seatType: "R" },
-    { name: "b2", size: 2, seatType: "R" },
-    { name: "b3", size: 4, seatType: "V" },
-    { name: "b4", size: 2, seatType: "V" },
-    { name: "b5", size: 1, seatType: "VA" },
+    { name: "b1", size: 2, seatType: "RA" },
+    { name: "b2", size: 1, seatType: "RA" },
+    { name: "b3", size: 1, seatType: "VA" },
+    { name: "b4", size: 2, seatType: "R" },
+    { name: "b5", size: 2, seatType: "V" },
+    { name: "b6", size: 2, seatType: "V" },
+    { name: "b7", size: 2, seatType: "R" },
   ];
   return bookings;
 }
@@ -64,7 +66,6 @@ function getSizeForSeatTypeFromBookings(bookings, seatType) {
 }
 
 function markSeatOccupied(seats, booking, targetRow, targetColumn, memberID) {
-  console.log(booking);
   return seats.map((seat) => {
     if (seat.row === targetRow && seat.column === targetColumn) {
       return {
@@ -86,7 +87,16 @@ function getBookingsOfSeatTypeOrderedBySizeDescending(bookings, seatType) {
   return filteredBookings;
 }
 
+function getOccupiedSeats(seats) {
+  return seats.filter((seat) => seat.isOccupied);
+}
+
+function getUnOccupiedSeats(seats) {
+  return seats.filter((seat) => !seat.isOccupied);
+}
+
 module.exports = {
+  rows,
   getInitialSeats,
   getSampleBookingInputs,
   isBookingAvailable,
@@ -94,4 +104,6 @@ module.exports = {
   getBookingsForSeatType,
   markSeatOccupied,
   getBookingsOfSeatTypeOrderedBySizeDescending,
+  getOccupiedSeats,
+  getUnOccupiedSeats,
 };
