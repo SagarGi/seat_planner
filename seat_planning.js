@@ -7,6 +7,7 @@ const {
   getBookingsForSeatType,
   getSizeForSeatTypeFromBookings,
   markSeatOccupied,
+  getBookingsOfSeatTypeOrderedBySizeDescending,
 } = require("./seat_helper.js");
 
 let seats = getInitialSeats(); // Initialize the seat layout
@@ -28,17 +29,111 @@ function handleVIPBookings() {
         `In Booking \n ${JSON.stringify(
           getBookingsForSeatType(bookings, "VA")
         )} \n` +
-          "There is only 1 VIP Accessible Seat available, Please go with the regular Accessible seats"
+          `There are only 1 VIP Accessible seats available but found ${totalSizeOfVIPAccessibleBookings},
+        Please go with the regular seats`
       );
       return;
     } else {
       // it means there is only one VA booking, we can assign it to the VA seat in column 10 of row A
       // seats has been updated
-      seats = markSeatOccupied(seats, "A", 10);
+      seats = markSeatOccupied(
+        seats,
+        getBookingsForSeatType(bookings, "VA")[0],
+        "A",
+        10,
+        `member 1`
+      );
       console.log("VIP Accessible Seat arranged successfully");
     }
-  } else {
-    console.log("No VIP Accessible Seat booking found");
+  }
+
+  // 3. check if there is any V in the bookings
+  if (isBookingAvailable(bookings, "V")) {
+    // we will assign VIP seats now
+    // if VA is not occipied then we will validate for upto 10 VIP seats
+    // if VA is occupied then we will assign upto 9 VIP seats
+    const totalSizeOfVIPBookings = getSizeForSeatTypeFromBookings(
+      bookings,
+      "V"
+    );
+    if (!isBookingAvailable(bookings, "VA")) {
+      // we validate for 10 VIP seats
+      if (totalSizeOfVIPBookings > 10) {
+        console.error(
+          `In Booking \n ${JSON.stringify(
+            getBookingsForSeatType(bookings, "V")
+          )} \n` +
+            `There are only 9 VIP seats available but found ${totalSizeOfVIPBookings},
+             Please go with the regular seats`
+        );
+        return;
+      }
+      // now we can assign upto 10 VIP seats
+      const sortedVIPBookings = getBookingsOfSeatTypeOrderedBySizeDescending(
+        bookings,
+        "V"
+      );
+      let iterator = 1;
+      // for VIP its always row A
+      let row = "A";
+      for (let i = 0; i < sortedVIPBookings.length; i++) {
+        const vipBooking = sortedVIPBookings[i];
+        let memberID = 1;
+        let tmpItrator = iterator;
+        for (let j = 0; j < vipBooking.size; j++) {
+          seats = markSeatOccupied(
+            seats,
+            vipBooking,
+            row,
+            tmpItrator,
+            memberID
+          );
+          memberID++;
+          tmpItrator++;
+        }
+        iterator += vipBooking.size;
+      }
+      console.log(seats);
+    } else {
+      // we validate for 9 VIP seats
+      if (totalSizeOfVIPBookings > 9) {
+        console.error(
+          `In Booking \n ${JSON.stringify(
+            getBookingsForSeatType(bookings, "V")
+          )} \n` +
+            `There are only 9 VIP seats available but found ${totalSizeOfVIPBookings},
+             Please go with the regular seats`
+        );
+        return;
+      }
+      // now we can assign upto 9 VIP seats
+      // now we can assign upto 10 VIP seats
+      const sortedVIPBookings = getBookingsOfSeatTypeOrderedBySizeDescending(
+        bookings,
+        "V"
+      );
+      let iterator = 1;
+      // for VIP its always row A
+      let row = "A";
+      for (let i = 0; i < sortedVIPBookings.length; i++) {
+        const vipBooking = sortedVIPBookings[i];
+        let memberID = 1;
+        let tmpItrator = iterator;
+        for (let j = 0; j < vipBooking.size; j++) {
+          seats = markSeatOccupied(
+            seats,
+            vipBooking,
+            row,
+            tmpItrator,
+            memberID
+          );
+          memberID++;
+          tmpItrator++;
+        }
+        iterator += vipBooking.size;
+      }
+      console.log(seats);
+    }
   }
 }
 

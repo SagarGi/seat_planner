@@ -1,8 +1,8 @@
 // seat_helper.js
+const rows = ["A", "B", "C", "D", "E", "F", "G"];
 
 function getInitialSeats() {
   // rows can be extended to A-Z but columns are fixed to 10
-  const rows = ["A", "B", "C", "D", "E", "F", "G"];
   const columns = Array.from({ length: 10 }, (_, i) => i + 1);
   const seats = [];
   rows.forEach((row) => {
@@ -32,9 +32,9 @@ function getSampleBookingInputs() {
   const bookings = [
     { name: "b1", size: 1, seatType: "R" },
     { name: "b2", size: 2, seatType: "R" },
-    { name: "b3", size: 3, seatType: "V" },
-    { name: "b4", size: 6, seatType: "V" },
-    { name: "b5", size: 1, seatType: "V" },
+    { name: "b3", size: 4, seatType: "V" },
+    { name: "b4", size: 2, seatType: "V" },
+    { name: "b5", size: 1, seatType: "VA" },
   ];
   return bookings;
 }
@@ -63,13 +63,27 @@ function getSizeForSeatTypeFromBookings(bookings, seatType) {
   return totalSize;
 }
 
-function markSeatOccupied(seats, targetRow, targetColumn) {
+function markSeatOccupied(seats, booking, targetRow, targetColumn, memberID) {
+  console.log(booking);
   return seats.map((seat) => {
     if (seat.row === targetRow && seat.column === targetColumn) {
-      return { ...seat, isOccupied: true };
+      return {
+        ...seat,
+        isOccupied: true,
+        bookingID: booking.name,
+        memberID: memberID,
+      };
     }
     return seat;
   });
+}
+
+function getBookingsOfSeatTypeOrderedBySizeDescending(bookings, seatType) {
+  const filteredBookings = bookings.filter(
+    (booking) => booking.seatType === seatType
+  );
+  filteredBookings.sort((a, b) => b.size - a.size);
+  return filteredBookings;
 }
 
 module.exports = {
@@ -79,4 +93,5 @@ module.exports = {
   getSizeForSeatTypeFromBookings,
   getBookingsForSeatType,
   markSeatOccupied,
+  getBookingsOfSeatTypeOrderedBySizeDescending,
 };
