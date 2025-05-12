@@ -3,40 +3,42 @@ const rows = ["A", "B", "C", "D", "E", "F", "G"];
 const col = 10;
 
 function getInitialSeats() {
-  const columns = Array.from({ length: col }, (_, i) => i + 1);
-  const seats = [];
+  const seatGrid = [];
 
-  rows.forEach((row) => {
-    columns.forEach((col, colIndex) => {
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const seatRow = [];
+
+    for (let j = 0; j < col; j++) {
+      const column = j + 1;
       let seatType = "R";
 
       if (row === "A") {
-        // Last 1/3 of row A are RA
-        const threshold = columns.length - Math.floor(columns.length / 3);
-        if (colIndex >= threshold) {
-          seatType = "RA";
-        } else {
-          seatType = "V";
-        }
+        const threshold = col - Math.floor(col / 3);
+        seatType = j >= threshold ? "RA" : "V";
       }
 
       const seat = {
-        seatId: `${row}${col}`,
+        seatId: `${row}${column}`,
         row: row,
-        column: col,
+        column: column,
         isOccupied: false,
         seatType: seatType,
       };
-      seats.push(seat);
-    });
-  });
 
-  return seats;
+      seatRow.push(seat);
+    }
+
+    seatGrid.push(seatRow);
+  }
+
+  return seatGrid;
 }
 
 function getSampleBookingInputs() {
   const bookings = [
     { name: "b1", size: 2, seatType: "RA" },
+    { name: "b1", size: 1, seatType: "RA" },
     { name: "b2", size: 1, seatType: "R" },
     { name: "b3", size: 1, seatType: "V" },
     { name: "b4", size: 2, seatType: "R" },
@@ -71,18 +73,17 @@ function getSizeForSeatTypeFromBookings(bookings, seatType) {
   return totalSize;
 }
 
-function markSeatOccupied(seats, booking, targetRow, targetColumn, memberID) {
-  return seats.map((seat) => {
-    if (seat.row === targetRow && seat.column === targetColumn) {
-      return {
-        ...seat,
-        isOccupied: true,
-        bookingID: booking.name,
-        memberID: memberID,
-      };
-    }
-    return seat;
-  });
+function markSeatOccupied(
+  seats,
+  bookingName,
+  targetRow,
+  targetColumn,
+  memberID
+) {
+  seats[targetRow][targetColumn].isOccupied = true;
+  seats[targetRow][targetColumn].memberID = memberID;
+  seats[targetRow][targetColumn].groupName = bookingName;
+  return seats;
 }
 
 function getBookingsOfSeatTypeOrderedBySizeDescending(bookings, seatType) {
@@ -107,6 +108,19 @@ function getNumberOfVipSeats(colLength) {
 
 function getNumberOfAccessibleSeats(colLength) {
   return Math.floor(colLength / 3);
+}
+
+// this function returns the row along with column start and end index for the consecutive seats
+function getCorrectConsecutiveSeatIndex(noOfConsecutiveSeatsToFind, seats) {
+  const rowLenth = rows.length;
+  const colLenth = col;
+
+  for (let i = 0; i < rowLenth; i++) {
+    // see consecutive in first row and so on
+    for (j = 0; j <= colLenth; j++) {
+      console.log(seats[i * colLenth + j]);
+    }
+  }
 }
 
 module.exports = {

@@ -20,15 +20,21 @@ let seats = getInitialSeats(); // Initialize the seat layout
 const bookings = getSampleBookingInputs(); // Sample bookings
 
 function assignSeatsForVIP(sortedVIPBookings) {
-  let iterator = 1;
-  // for VIP its always row A
-  let row = "A";
+  let iterator = 0;
+  // for VIP its always row A whose index is 0
+  let row = 0;
   for (let i = 0; i < sortedVIPBookings.length; i++) {
     const vipBooking = sortedVIPBookings[i];
     let memberID = 1;
     let tmpItrator = iterator;
     for (let j = 0; j < vipBooking.size; j++) {
-      seats = markSeatOccupied(seats, vipBooking, row, tmpItrator, memberID);
+      seats = markSeatOccupied(
+        seats,
+        vipBooking.name,
+        row,
+        tmpItrator,
+        memberID
+      );
       memberID++;
       tmpItrator++;
     }
@@ -38,22 +44,27 @@ function assignSeatsForVIP(sortedVIPBookings) {
 
 function assignSeatsForRegularAccessible(
   sortedRegularOrAccessibleBookings,
-  startIterator = 1
+  startIterator = 0
 ) {
-  let iterator = startIterator + 1;
-  console.log(iterator);
+  let iterator = startIterator;
   // for accessible seats its always row A
-  let row = "A";
+  let row = 0;
   for (let i = 0; i < sortedRegularOrAccessibleBookings.length; i++) {
-    const aBooking = sortedRegularOrAccessibleBookings[i];
+    const raBooking = sortedRegularOrAccessibleBookings[i];
     let memberID = 1;
     let tmpItrator = iterator;
-    for (let j = 0; j < aBooking.size; j++) {
-      seats = markSeatOccupied(seats, aBooking, row, tmpItrator, memberID);
+    for (let j = 0; j < raBooking.size; j++) {
+      seats = markSeatOccupied(
+        seats,
+        raBooking.name,
+        row,
+        tmpItrator,
+        memberID
+      );
       memberID++;
       tmpItrator++;
     }
-    iterator += aBooking.size;
+    iterator += raBooking.size;
   }
 }
 
@@ -121,7 +132,6 @@ function handleRegularBookings() {
     bookings,
     "R"
   );
-  console.log("sortedRegularBookings", sortedRegularBookings);
 }
 
 function arrangeSeats() {
