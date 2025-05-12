@@ -14,6 +14,7 @@ const {
   getUnOccupiedSeats,
   getNumberOfVipSeats,
   getNumberOfAccessibleSeats,
+  findConsecutiveSeatsBasedOnSizes,
 } = require("./seat_helper.js");
 
 let seats = getInitialSeats(); // Initialize the seat layout
@@ -132,6 +133,19 @@ function handleRegularBookings() {
     bookings,
     "R"
   );
+
+  for (let i = 0; i < sortedRegularBookings.length; i++) {
+    const resultForConsecutiveSeats = findConsecutiveSeatsBasedOnSizes(
+      seats,
+      sortedRegularBookings[i].size
+    );
+    c; // assigning the seats
+    assignSeatsForRegularAccessible(
+      sortedRegularBookings,
+      resultForConsecutiveSeats.startIterator
+    );
+  }
+  console.log("sortedRegularBookings", sortedRegularBookings);
 }
 
 function arrangeSeats() {

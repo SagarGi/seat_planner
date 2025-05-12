@@ -14,6 +14,7 @@ function getInitialSeats() {
       let seatType = "R";
 
       if (row === "A") {
+        // one third of the seats in row A are priority seats and rest are VIP
         const threshold = col - Math.floor(col / 3);
         seatType = j >= threshold ? "RA" : "V";
       }
@@ -23,6 +24,7 @@ function getInitialSeats() {
         row: row,
         column: column,
         isOccupied: false,
+        isBroken: false,
         seatType: seatType,
       };
 
@@ -123,6 +125,28 @@ function getCorrectConsecutiveSeatIndex(noOfConsecutiveSeatsToFind, seats) {
   }
 }
 
+function findConsecutiveSeatsBasedOnSizes(seats, sizeWanted) {
+  for (let i = 0; i < seats.length; i++) {
+    let consecutive = 0;
+
+    for (let j = 0; j < seats[i].length; j++) {
+      if (!seats[i][j].isOccupied) {
+        consecutive++;
+        if (consecutive === sizeWanted) {
+          const startIndex = j - sizeWanted + 1;
+          return {
+            row: seats[i][0].row,
+            startColumnIndex: startIndex,
+          };
+        }
+      } else {
+        consecutive = 0;
+      }
+    }
+  }
+  return null;
+}
+
 module.exports = {
   rows,
   col,
@@ -137,4 +161,5 @@ module.exports = {
   getUnOccupiedSeats,
   getNumberOfVipSeats,
   getNumberOfAccessibleSeats,
+  findConsecutiveSeatsBasedOnSizes,
 };
