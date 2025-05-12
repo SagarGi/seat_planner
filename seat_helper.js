@@ -1,20 +1,25 @@
 // seat_helper.js
-let rows = ["A", "B", "C", "D", "E", "F", "G"];
+const rows = ["A", "B", "C", "D", "E", "F", "G"];
+const col = 10;
 
 function getInitialSeats() {
-  // rows can be extended to A-Z but columns are fixed to 10
-  const columns = Array.from({ length: 10 }, (_, i) => i + 1);
+  const columns = Array.from({ length: col }, (_, i) => i + 1);
   const seats = [];
+
   rows.forEach((row) => {
-    columns.forEach((col) => {
+    columns.forEach((col, colIndex) => {
       let seatType = "R";
-      if (row === "A" && col === 10) {
-        seatType = "VA";
-      } else if (row === "A") {
-        seatType = "V";
-      } else if (row !== "A" && col === 10) {
-        seatType = "RA";
+
+      if (row === "A") {
+        // Last 1/3 of row A are RA
+        const threshold = columns.length - Math.floor(columns.length / 3);
+        if (colIndex >= threshold) {
+          seatType = "RA";
+        } else {
+          seatType = "V";
+        }
       }
+
       const seat = {
         seatId: `${row}${col}`,
         row: row,
@@ -25,17 +30,18 @@ function getInitialSeats() {
       seats.push(seat);
     });
   });
+
   return seats;
 }
 
 function getSampleBookingInputs() {
   const bookings = [
     { name: "b1", size: 2, seatType: "RA" },
-    { name: "b2", size: 1, seatType: "RA" },
-    { name: "b3", size: 1, seatType: "VA" },
+    { name: "b2", size: 1, seatType: "R" },
+    { name: "b3", size: 1, seatType: "V" },
     { name: "b4", size: 2, seatType: "R" },
     { name: "b5", size: 2, seatType: "V" },
-    { name: "b6", size: 2, seatType: "V" },
+    { name: "b6", size: 4, seatType: "V" },
     { name: "b7", size: 2, seatType: "R" },
   ];
   return bookings;
@@ -95,8 +101,17 @@ function getUnOccupiedSeats(seats) {
   return seats.filter((seat) => !seat.isOccupied);
 }
 
+function getNumberOfVipSeats(colLength) {
+  return colLength - Math.floor(colLength / 3);
+}
+
+function getNumberOfAccessibleSeats(colLength) {
+  return Math.floor(colLength / 3);
+}
+
 module.exports = {
   rows,
+  col,
   getInitialSeats,
   getSampleBookingInputs,
   isBookingAvailable,
@@ -106,4 +121,6 @@ module.exports = {
   getBookingsOfSeatTypeOrderedBySizeDescending,
   getOccupiedSeats,
   getUnOccupiedSeats,
+  getNumberOfVipSeats,
+  getNumberOfAccessibleSeats,
 };

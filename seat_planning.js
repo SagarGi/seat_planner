@@ -2,6 +2,7 @@
 
 const {
   rows,
+  col,
   getInitialSeats,
   getSampleBookingInputs,
   isBookingAvailable,
@@ -11,6 +12,8 @@ const {
   getBookingsOfSeatTypeOrderedBySizeDescending,
   getOccupiedSeats,
   getUnOccupiedSeats,
+  getNumberOfVipSeats,
+  getNumberOfAccessibleSeats,
 } = require("./seat_helper.js");
 
 let seats = getInitialSeats(); // Initialize the seat layout
@@ -34,164 +37,99 @@ function assignSeatsForVIP(sortedVIPBookings) {
 }
 
 function assignSeatsForRegularAccessible(
-  sortedRegularAccessibleBookings,
-  startRowIndex
+  sortedRegularOrAccessibleBookings,
+  startIterator = 1
 ) {
-  // for Regular Accessible row is always 10
-  const col = 10;
-  for (let i = 0; i < sortedRegularAccessibleBookings.length; i++) {
-    const regAccessbileBooking = sortedRegularAccessibleBookings[i];
+  let iterator = startIterator + 1;
+  console.log(iterator);
+  // for accessible seats its always row A
+  let row = "A";
+  for (let i = 0; i < sortedRegularOrAccessibleBookings.length; i++) {
+    const aBooking = sortedRegularOrAccessibleBookings[i];
     let memberID = 1;
-    for (let j = 0; j < regAccessbileBooking.size; j++) {
-      seats = markSeatOccupied(
-        seats,
-        regAccessbileBooking,
-        rows[startRowIndex],
-        col,
-        memberID
-      );
+    let tmpItrator = iterator;
+    for (let j = 0; j < aBooking.size; j++) {
+      seats = markSeatOccupied(seats, aBooking, row, tmpItrator, memberID);
       memberID++;
-      startRowIndex++;
+      tmpItrator++;
     }
+    iterator += aBooking.size;
   }
 }
 
 // first we handle the VIP bookings and then only go for regular bookings
-
 function handleVIPBookings() {
-  // 1. get and check if there is any VA in the bookings
-  // 2. since there is only one VA seats, if there are more then 1 VA seats we need to tell the user
-  // to go with the regular Accessible one
-  if (isBookingAvailable(bookings, "VA")) {
-    const totalSizeOfVIPAccessibleBookings = getSizeForSeatTypeFromBookings(
-      bookings,
-      "VA"
-    );
-    if (totalSizeOfVIPAccessibleBookings > 1) {
-      console.error(
-        `In Booking \n ${JSON.stringify(
-          getBookingsForSeatType(bookings, "VA")
-        )} \n` +
-          `There are only 1 VIP Accessible seats available but found ${totalSizeOfVIPAccessibleBookings},
-        Please go with the regular seats`
-      );
-      return;
-    } else {
-      // it means there is only one VA booking, we can assign it to the VA seat in column 10 of row A
-      // seats has been updated
-      seats = markSeatOccupied(
-        seats,
-        getBookingsForSeatType(bookings, "VA")[0],
-        "A",
-        10,
-        1
-      );
-      console.log("VIP Accessible Seat arranged successfully");
-    }
-  }
-
-  // 3. check if there is any V in the bookings
+  // 1. check if there is any V in the bookings
   if (isBookingAvailable(bookings, "V")) {
-    // we will assign VIP seats now
-    // if VA is not occipied then we will validate for upto 10 VIP seats
-    // if VA is occupied then we will assign upto 9 VIP seats
     const totalSizeOfVIPBookings = getSizeForSeatTypeFromBookings(
       bookings,
       "V"
     );
-    if (!isBookingAvailable(bookings, "VA")) {
-      // we validate for 10 VIP seats
-      if (totalSizeOfVIPBookings > 10) {
-        console.error(
-          `In Booking \n ${JSON.stringify(
-            getBookingsForSeatType(bookings, "V")
-          )} \n` +
-            `There are only 9 VIP seats available but found ${totalSizeOfVIPBookings},
-             Please go with the regular seats`
-        );
-        return;
-      }
-      // now we can assign upto 10 VIP seats
-      const sortedVIPBookings = getBookingsOfSeatTypeOrderedBySizeDescending(
-        bookings,
-        "V"
+    // validation is required as we have limited vip seats and accessible or priority seats
+    const vipSeatsAvailable = getNumberOfVipSeats(col);
+    if (totalSizeOfVIPBookings > vipSeatsAvailable) {
+      console.error(
+        `In Booking \n ${JSON.stringify(
+          getBookingsForSeatType(bookings, "V")
+        )} \n` +
+          `There are only ${vipSeatsAvailable} VIP seats available but found ${totalSizeOfVIPBookings},
+        Please go with the regular seats if possible`
       );
-      assignSeatsForVIP(sortedVIPBookings);
-    } else {
-      // we validate for 9 VIP seats
-      if (totalSizeOfVIPBookings > 9) {
-        console.error(
-          `In Booking \n ${JSON.stringify(
-            getBookingsForSeatType(bookings, "V")
-          )} \n` +
-            `There are only 9 VIP seats available but found ${totalSizeOfVIPBookings},
-             Please go with the regular seats`
-        );
-        return;
-      }
-      // now we can assign upto 9 VIP seats
-      // now we can assign upto 10 VIP seats
-      const sortedVIPBookings = getBookingsOfSeatTypeOrderedBySizeDescending(
-        bookings,
-        "V"
-      );
-      assignSeatsForVIP(sortedVIPBookings);
+      return;
     }
+    // we know there are VIP seats available
+    // we will assign them first in groups and then individuals
+    const sortedVIPBookings = getBookingsOfSeatTypeOrderedBySizeDescending(
+      bookings,
+      "V"
+    );
+    assignSeatsForVIP(sortedVIPBookings);
   }
 }
 
-function handleRegularBookings(allAccessible = false) {
+function handleRegularBookings() {
   // first we check if there any Regular Accessible in the bookings
   if (isBookingAvailable(bookings, "RA")) {
     const totalSizeOfRegularAccessibleBookings = getSizeForSeatTypeFromBookings(
       bookings,
       "RA"
     );
-    rowCount = allAccessible ? rows.length : rows.length - 1;
-    console.log(allAccessible);
-    if (totalSizeOfRegularAccessibleBookings > rowCount) {
+    // validation is required as we have limited accessible or priority seats
+    const accessibleSeatsAvailable = getNumberOfAccessibleSeats(col);
+    if (totalSizeOfRegularAccessibleBookings > accessibleSeatsAvailable) {
       console.error(
         `In Booking \n ${JSON.stringify(
           getBookingsForSeatType(bookings, "RA")
         )} \n` +
-          `There are only ${rows.length} Regular Accessible seats available but found ${totalSizeOfRegularAccessibleBookings},
+          `There are only ${accessibleSeatsAvailable} Accessible seats available but found ${totalSizeOfRegularAccessibleBookings},
         Please go with the regular seats if possible`
       );
       return;
-    } else {
-      // we know there are Regular Accessible seats available
-      // we will assign Regular Accessible seats now
-      const sortedRegularAccessibleBookings =
-        getBookingsOfSeatTypeOrderedBySizeDescending(bookings, "RA");
-      assignSeatsForRegularAccessible(
-        sortedRegularAccessibleBookings,
-        allAccessible ? 0 : 1
-      );
-      console.log(getOccupiedSeats(seats));
     }
-  }
-
-  if (isBookingAvailable(bookings, "R")) {
-    const totalSizeOfRegularBookings = getSizeForSeatTypeFromBookings(
-      bookings,
-      "R"
+    // we know there are Accessible seats available
+    // we will assign them first in groups and then individuals
+    const sortedRegularAccessibleBookings =
+      getBookingsOfSeatTypeOrderedBySizeDescending(bookings, "RA");
+    assignSeatsForRegularAccessible(
+      sortedRegularAccessibleBookings,
+      col - accessibleSeatsAvailable
     );
   }
+
+  // And then we handle the rest of the seats following a specific algorithm to maximize the seat planning.
+  const sortedRegularBookings = getBookingsOfSeatTypeOrderedBySizeDescending(
+    bookings,
+    "R"
+  );
+  console.log("sortedRegularBookings", sortedRegularBookings);
 }
 
 function arrangeSeats() {
   // during the arrangement of seats if there are no VIPS at all then we treat them as regular bookings
-  if (
-    !isBookingAvailable(bookings, "VA") &&
-    !isBookingAvailable(bookings, "V")
-  ) {
-    handleRegularBookings(true);
-  } else {
-    // else we handle the VIP bookings first
-    // and then we handle the regular bookings
+  if (isBookingAvailable(bookings, "V")) {
     handleVIPBookings();
-    handleRegularBookings(false);
   }
+  handleRegularBookings();
 }
 
 arrangeSeats();
