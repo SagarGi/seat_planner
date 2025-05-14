@@ -18,7 +18,7 @@ function getInitialSeats() {
         const threshold = col - Math.floor(col / 3);
         seatType = j >= threshold ? "RA" : "V";
       }
-
+ 
       const seat = {
         seatId: `${row}${column}`,
         row: row,
@@ -40,13 +40,14 @@ function getInitialSeats() {
 function getSampleBookingInputs() {
   const bookings = [
     { name: "b1", size: 2, seatType: "RA" },
-    { name: "b1", size: 1, seatType: "RA" },
-    { name: "b2", size: 1, seatType: "R" },
-    { name: "b3", size: 1, seatType: "V" },
-    { name: "b4", size: 2, seatType: "R" },
-    { name: "b5", size: 2, seatType: "V" },
-    { name: "b6", size: 4, seatType: "V" },
-    { name: "b7", size: 2, seatType: "R" },
+    { name: "b2", size: 1, seatType: "RA" },
+    { name: "b3", size: 1, seatType: "R" },
+    { name: "b4", size: 1, seatType: "V" },
+    { name: "b5", size: 2, seatType: "R" },
+    { name: "b6", size: 2, seatType: "V" },
+    { name: "b7", size: 4, seatType: "V" },
+    { name: "b8", size: 13, seatType: "R" },
+    { name: "b9", size: 2, seatType: "R" },
   ];
   return bookings;
 }
@@ -97,11 +98,11 @@ function getBookingsOfSeatTypeOrderedBySizeDescending(bookings, seatType) {
 }
 
 function getOccupiedSeats(seats) {
-  return seats.filter((seat) => seat.isOccupied);
+  return seats.flat().filter((seat) => seat.isOccupied);
 }
 
 function getUnOccupiedSeats(seats) {
-  return seats.filter((seat) => !seat.isOccupied);
+  return seats.flat().filter((seat) => !seat.isOccupied);
 }
 
 function getNumberOfVipSeats(colLength) {
@@ -136,6 +137,7 @@ function findConsecutiveSeatsBasedOnSizes(seats, sizeWanted) {
           const startIndex = j - sizeWanted + 1;
           return {
             row: seats[i][0].row,
+            startRowIndex: i,
             startColumnIndex: startIndex,
           };
         }
@@ -145,6 +147,53 @@ function findConsecutiveSeatsBasedOnSizes(seats, sizeWanted) {
     }
   }
   return null;
+}
+
+function getMaxConsecutiveSeats(seats) {
+  let maxConsecutive = 0;
+
+  for (let i = 0; i < seats.length; i++) {
+    let currentConsecutive = 0;
+
+    for (let j = 0; j < seats[i].length; j++) {
+      if (!seats[i][j].isOccupied) {
+        currentConsecutive++;
+        if (currentConsecutive > maxConsecutive) {
+          maxConsecutive = currentConsecutive;
+        }
+      } else {
+        currentConsecutive = 0;
+      }
+    }
+  }
+
+  return maxConsecutive;
+}
+
+function splitBookingInput(availableConsecutiveSeat, currentBookings) {
+  const result = [];
+
+  for (const booking of currentBookings) {
+    let remaining = booking.size;
+
+    while (remaining > availableConsecutiveSeat) {
+      result.push({
+        name: booking.name,
+        size: availableConsecutiveSeat,
+        seatType: booking.seatType,
+      });
+      remaining -= availableConsecutiveSeat;
+    }
+
+    if (remaining > 0) {
+      result.push({
+        name: booking.name,
+        size: remaining,
+        seatType: booking.seatType,
+      });
+    }
+  }
+  return result;
 }
 
 module.exports = {
@@ -162,4 +211,6 @@ module.exports = {
   getNumberOfVipSeats,
   getNumberOfAccessibleSeats,
   findConsecutiveSeatsBasedOnSizes,
+  splitBookingInput,
+  getMaxConsecutiveSeats,
 };

@@ -15,6 +15,8 @@ const {
   getNumberOfVipSeats,
   getNumberOfAccessibleSeats,
   findConsecutiveSeatsBasedOnSizes,
+  splitBookingInput,
+  getMaxConsecutiveSeats,
 } = require("./seat_helper.js");
 
 let seats = getInitialSeats(); // Initialize the seat layout
@@ -129,23 +131,46 @@ function handleRegularBookings() {
   }
 
   // And then we handle the rest of the seats following a specific algorithm to maximize the seat planning.
-  const sortedRegularBookings = getBookingsOfSeatTypeOrderedBySizeDescending(
+  let sortedRegularBookings = getBookingsOfSeatTypeOrderedBySizeDescending(
     bookings,
     "R"
   );
 
-  for (let i = 0; i < sortedRegularBookings.length; i++) {
-    const resultForConsecutiveSeats = findConsecutiveSeatsBasedOnSizes(
-      seats,
-      sortedRegularBookings[i].size
-    );
-    c; // assigning the seats
-    assignSeatsForRegularAccessible(
-      sortedRegularBookings,
-      resultForConsecutiveSeats.startIterator
-    );
+  let seatOverflowed = false;
+  while (!seatOverflowed) {
+    for (let i = 0; i < sortedRegularBookings.length; i++) {
+      const resultForConsecutiveSeats = findConsecutiveSeatsBasedOnSizes(
+        seats,
+        sortedRegularBookings[i].size
+      );
+      if (resultForConsecutiveSeats === null) {
+        // we will go vist another row to find suitable consecutive seats
+        const maxConsecutiveSeats = getMaxConsecutiveSeats(seats);
+        sortedRegularBookings = splitBookingInput(
+          maxConsecutiveSeats,
+          sortedRegularBookings
+        );
+        break; // we will run another round of loop to arrange the seats
+      }
+      // assigning the seats
+      let iterator = resultForConsecutiveSeats.startColumnIndex;
+      row = resultForConsecutiveSeats.startRowIndex;
+      let memberID = 1;
+      let tmpItrator = iterator;
+      for (let j = 0; j < sortedRegularBookings[i].size; j++) {
+        seats = markSeatOccupied(
+          seats,
+          sortedRegularBookings[i].name,
+          row,
+          tmpItrator,
+          memberID
+        );
+        memberID++;
+        tmpItrator++;
+      }
+      seatOverflowed = true;
+    }
   }
-  console.log("sortedRegularBookings", sortedRegularBookings);
 }
 
 function arrangeSeats() {
@@ -154,6 +179,9 @@ function arrangeSeats() {
     handleVIPBookings();
   }
   handleRegularBookings();
+  console.log(
+    "The final arrangement of seats is as follows based on the given inputs:"
+  );
+  console.log(seats);
 }
-
 arrangeSeats();
