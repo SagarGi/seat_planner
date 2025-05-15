@@ -3,7 +3,7 @@
 const {
   rows,
   col,
-  getInitialSeats,
+  getInitialSeatsLayout,
   getSampleBookingInputs,
   isBookingAvailable,
   getBookingsForSeatType,
@@ -15,12 +15,13 @@ const {
   getNumberOfVipSeats,
   getNumberOfAccessibleSeats,
   findConsecutiveSeatsBasedOnSizes,
+  findConsecutiveSeatsBasedOnSizes1,
   splitBookingInput,
   getMaxConsecutiveSeats,
 } = require("./seat_helper.js");
 
-let seats = getInitialSeats(); // Initialize the seat layout
-const bookings = getSampleBookingInputs(); // Sample bookings
+let seats = getInitialSeatsLayout(); // Initialize the seat layout
+const bookings = getSampleBookingInputs(70); // Sample bookings
 
 function assignSeatsForVIP(sortedVIPBookings) {
   let iterator = 0;
@@ -137,19 +138,64 @@ function handleRegularBookings() {
   );
 
   let seatOverflowed = false;
+  let lastRowIndexUsed = 0;
   while (!seatOverflowed) {
     for (let i = 0; i < sortedRegularBookings.length; i++) {
-      const resultForConsecutiveSeats = findConsecutiveSeatsBasedOnSizes(
-        seats,
-        sortedRegularBookings[i].size
+      console.log("Yesko palo ==== " + sortedRegularBookings[i].size);
+      let prevGroupName = sortedRegularBookings[i - 1]?.name;
+      let resultForConsecutiveSeats = null;
+      console.log(
+        "prevGroupName=========" +
+          prevGroupName +
+          "\n" +
+          "currentGroupName=========" +
+          sortedRegularBookings[i].name +
+          "\n" +
+          "lastRowIndexUsed=========" +
+          lastRowIndexUsed +
+          "\n" +
+          "resultForConsecutiveSeats=========" +
+          resultForConsecutiveSeats +
+          "\n" +
+          "sortedRegularBookingsSize=========" +
+          sortedRegularBookings.length
       );
+      console.log(JSON.stringify(sortedRegularBookings));
+      if (prevGroupName === sortedRegularBookings[i].name) {
+        console.log("Yes");
+        noOfSeatsConsecutiveFromPrevRow = findConsecutiveSeatsBasedOnSizes1(
+          seats,
+          sortedRegularBookings[i].size,
+          lastRowIndexUsed + 1
+        );
+        if (noOfSeatsConsecutiveFromPrevRow !== null) {
+          resultForConsecutiveSeats = noOfSeatsConsecutiveFromPrevRow;
+        } else {
+          resultForConsecutiveSeats = findConsecutiveSeatsBasedOnSizes(
+            seats,
+            sortedRegularBookings[i].size
+          );
+        }
+      } else {
+        resultForConsecutiveSeats = findConsecutiveSeatsBasedOnSizes(
+          seats,
+          sortedRegularBookings[i].size
+        );
+      }
+
       if (resultForConsecutiveSeats === null) {
         // we will go vist another row to find suitable consecutive seats
+        sortedRegularBookings.splice(0, i);
+        console.log(
+          "Yesko palo ko split result =====" +
+            JSON.stringify(sortedRegularBookings)
+        );
         const maxConsecutiveSeats = getMaxConsecutiveSeats(seats);
         sortedRegularBookings = splitBookingInput(
           maxConsecutiveSeats,
           sortedRegularBookings
         );
+        seatOverflowed = false;
         break; // we will run another round of loop to arrange the seats
       }
       // assigning the seats
@@ -169,6 +215,7 @@ function handleRegularBookings() {
         tmpItrator++;
       }
       seatOverflowed = true;
+      lastRowIndexUsed = resultForConsecutiveSeats.startRowIndex;
     }
   }
 }
@@ -179,6 +226,10 @@ function arrangeSeats() {
     handleVIPBookings();
   }
   handleRegularBookings();
+  console.log("Radom Bookings are as follows:");
+  for (let i = 0; i < bookings.length; i++) {
+    console.log(bookings[i]);
+  }
   console.log(
     "The final arrangement of seats is as follows based on the given inputs:"
   );
