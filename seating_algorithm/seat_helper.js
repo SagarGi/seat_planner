@@ -231,28 +231,18 @@ function getMaxConsecutiveSeats(seats) {
 }
 
 function splitBookingInput(availableConsecutiveSeat, currentBookings) {
-  const result = [];
+  const result = [...currentBookings];
+  const first = result[0];
 
-  for (const booking of currentBookings) {
-    let remaining = booking.size;
-
-    while (remaining > availableConsecutiveSeat) {
-      result.push({
-        name: booking.name,
-        size: availableConsecutiveSeat,
-        seatType: booking.seatType,
-      });
-      remaining -= availableConsecutiveSeat;
-    }
-
-    if (remaining > 0) {
-      result.push({
-        name: booking.name,
-        size: remaining,
-        seatType: booking.seatType,
-      });
-    }
+  if (first.size > availableConsecutiveSeat) {
+    const firstPart = { ...first, size: availableConsecutiveSeat };
+    const secondPart = {
+      ...first,
+      size: first.size - availableConsecutiveSeat,
+    };
+    result.splice(0, 1, firstPart, secondPart);
   }
+
   return result;
 }
 
