@@ -150,25 +150,12 @@ function getNumberOfAccessibleSeats(colLength) {
   return Math.floor(colLength / 3);
 }
 
-// this function returns the row along with column start and end index for the consecutive seats
-function getCorrectConsecutiveSeatIndex(noOfConsecutiveSeatsToFind, seats) {
-  const rowLenth = rows.length;
-  const colLenth = col;
-
-  for (let i = 0; i < rowLenth; i++) {
-    // see consecutive in first row and so on
-    for (j = 0; j <= colLenth; j++) {
-      console.log(seats[i * colLenth + j]);
-    }
-  }
-}
-
 function findConsecutiveSeatsBasedOnSizes(seats, sizeWanted) {
   for (let i = 0; i < seats.length; i++) {
     let consecutive = 0;
 
     for (let j = 0; j < seats[i].length; j++) {
-      if (!seats[i][j].isOccupied) {
+      if (!seats[i][j].isOccupied && !seats[i][j].isBroken) {
         consecutive++;
         if (consecutive === sizeWanted) {
           const startIndex = j - sizeWanted + 1;
@@ -186,12 +173,16 @@ function findConsecutiveSeatsBasedOnSizes(seats, sizeWanted) {
   return null;
 }
 
-function findConsecutiveSeatsBasedOnSizes1(seats, sizeWanted, minRowIndex = 0) {
+function findConsecutiveSeatsBasedOnSizesAndIndex(
+  seats,
+  sizeWanted,
+  minRowIndex = 0
+) {
   for (let i = minRowIndex; i < seats.length; i++) {
     let consecutive = 0;
 
     for (let j = 0; j < seats[i].length; j++) {
-      if (!seats[i][j].isOccupied) {
+      if (!seats[i][j].isOccupied && !seats[i][j].isBroken) {
         consecutive++;
         if (consecutive === sizeWanted) {
           const startIndex = j - sizeWanted + 1;
@@ -263,5 +254,5 @@ module.exports = {
   findConsecutiveSeatsBasedOnSizes,
   splitBookingInput,
   getMaxConsecutiveSeats,
-  findConsecutiveSeatsBasedOnSizes1,
+  findConsecutiveSeatsBasedOnSizesAndIndex,
 };

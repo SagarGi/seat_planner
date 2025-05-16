@@ -15,7 +15,7 @@ const {
   getNumberOfVipSeats,
   getNumberOfAccessibleSeats,
   findConsecutiveSeatsBasedOnSizes,
-  findConsecutiveSeatsBasedOnSizes1,
+  findConsecutiveSeatsBasedOnSizesAndIndex,
   splitBookingInput,
   getMaxConsecutiveSeats,
 } = require("./seat_helper.js");
@@ -144,11 +144,12 @@ function handleRegularBookings() {
       let prevGroupName = sortedRegularBookings[i - 1]?.name;
       let resultForConsecutiveSeats = null;
       if (prevGroupName === sortedRegularBookings[i].name) {
-        noOfSeatsConsecutiveFromPrevRow = findConsecutiveSeatsBasedOnSizes1(
-          seats,
-          sortedRegularBookings[i].size,
-          lastRowIndexUsed + 1
-        );
+        noOfSeatsConsecutiveFromPrevRow =
+          findConsecutiveSeatsBasedOnSizesAndIndex(
+            seats,
+            sortedRegularBookings[i].size,
+            lastRowIndexUsed + 1
+          );
         if (noOfSeatsConsecutiveFromPrevRow !== null) {
           resultForConsecutiveSeats = noOfSeatsConsecutiveFromPrevRow;
         } else {
@@ -204,15 +205,9 @@ function arrangeSeats() {
     handleVIPBookings();
   }
   handleRegularBookings();
-  for (
-    let i = 0;
-    i < getBookingsOfSeatTypeOrderedBySizeDescending(bookings, "R").length;
-    i++
-  ) {
-    console.log(getBookingsOfSeatTypeOrderedBySizeDescending(bookings, "R")[i]);
-  }
+  console.log("Your current bookings \n", bookings);
   console.log(
-    "The final arrangement of seats is as follows based on the given inputs:"
+    "The final arrangement of seats is as follows based on the given inputs:\n"
   );
   console.log(seats);
 }
