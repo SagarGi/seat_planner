@@ -3,6 +3,7 @@
 const {
   rows,
   col,
+  numberOfSampleBookingInputs,
   getInitialSeatsLayout,
   getSampleBookingInputs,
   isBookingAvailable,
@@ -12,6 +13,8 @@ const {
   getBookingsOfSeatTypeOrderedBySizeDescending,
   getOccupiedSeats,
   getUnOccupiedSeats,
+  getBrokenSeats,
+  getUnBrokenSeats,
   getNumberOfVipSeats,
   getNumberOfAccessibleSeats,
   findConsecutiveSeatsBasedOnSizes,
@@ -21,7 +24,34 @@ const {
 } = require("./seat_helper.js");
 
 let seats = getInitialSeatsLayout(); // Initialize the seat layout
-const bookings = getSampleBookingInputs(70); // Sample bookings
+const bookings = getSampleBookingInputs(numberOfSampleBookingInputs); // Sample bookings
+
+// this can be pointed by admin or even when generating the sample bookings
+// @ADMIN can mark seat as broken with row and column
+function markSeatBroken(seats, row, column) {
+  if (seats[row][column].isOccupied) {
+    console.error("This seat is already occupied");
+    return;
+  }
+  seats[row][column].isBroken = true;
+}
+
+function randomlyMarkBrokenSeats(seats, count) {
+  const totalRows = seats.length;
+  const totalCols = seats[0].length;
+  let marked = 0;
+
+  while (marked < count) {
+    const row = Math.floor(Math.random() * totalRows);
+    const col = Math.floor(Math.random() * totalCols);
+    const seat = seats[row][col];
+
+    if (!seat.isOccupied && !seat.isBroken) {
+      seat.isBroken = true;
+      marked++;
+    }
+  }
+}
 
 function assignSeatsForVIP(sortedVIPBookings) {
   let iterator = 0;
@@ -137,9 +167,12 @@ function handleRegularBookings() {
     "R"
   );
 
+  console.log("sortedRegularBookings", sortedRegularBookings);
+
   let seatOverflowed = false;
   let lastRowIndexUsed = 0;
   while (!seatOverflowed) {
+    console.log("lopping");
     for (let i = 0; i < sortedRegularBookings.length; i++) {
       let prevGroupName = sortedRegularBookings[i - 1]?.name;
       let resultForConsecutiveSeats = null;
@@ -174,6 +207,7 @@ function handleRegularBookings() {
           maxConsecutiveSeats,
           sortedRegularBookings
         );
+        console.log("Yeta aayo!");
         seatOverflowed = false;
         break; // we will run another round of loop to arrange the seats
       }
@@ -211,4 +245,11 @@ function arrangeSeats() {
   );
   console.log(seats);
 }
+
+// Extra
+// Before arranging the seats lets make 5 of them as broken and algorithm handle the seat
+// arrangement even if there is a broken seat
+// randomlyMarkBrokenSeats(seats, 5);
+// console.log(getBrokenSeats(seats));
+// Now arrange the seats
 arrangeSeats();

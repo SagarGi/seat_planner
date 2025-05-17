@@ -1,6 +1,7 @@
 // seat_helper.js
 const rows = ["A", "B", "C", "D", "E", "F", "G"];
 const col = 10;
+const numberOfSampleBookingInputs = 65;
 
 function getInitialSeatsLayout() {
   const seatGrid = [];
@@ -120,9 +121,14 @@ function markSeatOccupied(
   targetColumn,
   memberID
 ) {
-  seats[targetRow][targetColumn].isOccupied = true;
-  seats[targetRow][targetColumn].memberID = memberID;
-  seats[targetRow][targetColumn].groupName = bookingName;
+  const seat = seats[targetRow][targetColumn];
+
+  if (!seat.isBroken) {
+    seat.isOccupied = true;
+    seat.memberID = memberID;
+    seat.groupName = bookingName;
+  }
+
   return seats;
 }
 
@@ -141,9 +147,17 @@ function getOccupiedSeats(seats) {
 function getUnOccupiedSeats(seats) {
   return seats.flat().filter((seat) => !seat.isOccupied);
 }
+function getBrokenSeats(seats) {
+  return seats.flat().filter((seat) => seat.isBroken);
+}
+
+function getUnBrokenSeats(seats) {
+  return seats.flat().filter((seat) => !seat.isBroken);
+}
 
 function getNumberOfVipSeats(colLength) {
-  return colLength - Math.floor(colLength / 3);
+  vipSeats = colLength - Math.floor(colLength / 3);
+  // we need to check if there is any
 }
 
 function getNumberOfAccessibleSeats(colLength) {
@@ -207,7 +221,7 @@ function getMaxConsecutiveSeats(seats) {
     let currentConsecutive = 0;
 
     for (let j = 0; j < seats[i].length; j++) {
-      if (!seats[i][j].isOccupied) {
+      if (!seats[i][j].isOccupied && !seats[i][j].isBroken) {
         currentConsecutive++;
         if (currentConsecutive > maxConsecutive) {
           maxConsecutive = currentConsecutive;
@@ -240,6 +254,7 @@ function splitBookingInput(availableConsecutiveSeat, currentBookings) {
 module.exports = {
   rows,
   col,
+  numberOfSampleBookingInputs,
   getInitialSeatsLayout,
   getSampleBookingInputs,
   isBookingAvailable,
@@ -249,6 +264,8 @@ module.exports = {
   getBookingsOfSeatTypeOrderedBySizeDescending,
   getOccupiedSeats,
   getUnOccupiedSeats,
+  getBrokenSeats,
+  getUnBrokenSeats,
   getNumberOfVipSeats,
   getNumberOfAccessibleSeats,
   findConsecutiveSeatsBasedOnSizes,
