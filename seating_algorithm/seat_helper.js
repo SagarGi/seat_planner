@@ -27,6 +27,7 @@ function getInitialSeatsLayout() {
         isOccupied: false,
         isBroken: false,
         seatType: seatType,
+        groupName: null,
       };
 
       seatRow.push(seat);
@@ -114,18 +115,11 @@ function getSizeForSeatTypeFromBookings(bookings, seatType) {
   return totalSize;
 }
 
-function markSeatOccupied(
-  seats,
-  bookingName,
-  targetRow,
-  targetColumn,
-  memberID
-) {
+function markSeatOccupied(seats, bookingName, targetRow, targetColumn) {
   const seat = seats[targetRow][targetColumn];
 
   if (!seat.isBroken) {
     seat.isOccupied = true;
-    seat.memberID = memberID;
     seat.groupName = bookingName;
   }
 
@@ -251,6 +245,47 @@ function splitBookingInput(availableConsecutiveSeat, currentBookings) {
   return result;
 }
 
+// @ADMIN
+// @STAFF
+function cancelBooking(seats, bookingName) {
+  for (let row = 0; row < seats.length; row++) {
+    for (let col = 0; col < seats[row].length; col++) {
+      const seat = seats[row][col];
+
+      if (seat.groupName === bookingName) {
+        seat.isOccupied = false;
+      }
+    }
+  }
+  return seats;
+}
+
+// @ADMIN
+function swapSeats(seats, srcSeatID, destSeatID) {
+  let srcSeat = null;
+  let destSeat = null;
+
+  // Find source and destination seats
+  for (let row of seats) {
+    for (let seat of row) {
+      if (seat.seatId === srcSeatID) srcSeat = seat;
+      if (seat.seatId === destSeatID) destSeat = seat;
+    }
+  }
+
+  if (!srcSeat || !destSeat) {
+    console.error("One or both seat IDs not found.");
+    return;
+  }
+  const propsToSwap = { ...srcSeat };
+  delete propsToSwap.seatId;
+  for (let key in propsToSwap) {
+    const temp = srcSeat[key];
+    srcSeat[key] = destSeat[key];
+    destSeat[key] = temp;
+  }
+}
+
 module.exports = {
   rows,
   col,
@@ -272,4 +307,5 @@ module.exports = {
   splitBookingInput,
   getMaxConsecutiveSeats,
   findConsecutiveSeatsBasedOnSizesAndIndex,
+  cancelBooking,
 };

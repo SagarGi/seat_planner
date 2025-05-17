@@ -21,6 +21,7 @@ const {
   findConsecutiveSeatsBasedOnSizesAndIndex,
   splitBookingInput,
   getMaxConsecutiveSeats,
+  cancelBooking,
 } = require("./seat_helper.js");
 
 let seats = getInitialSeatsLayout(); // Initialize the seat layout
@@ -59,17 +60,9 @@ function assignSeatsForVIP(sortedVIPBookings) {
   let row = 0;
   for (let i = 0; i < sortedVIPBookings.length; i++) {
     const vipBooking = sortedVIPBookings[i];
-    let memberID = 1;
     let tmpItrator = iterator;
     for (let j = 0; j < vipBooking.size; j++) {
-      seats = markSeatOccupied(
-        seats,
-        vipBooking.name,
-        row,
-        tmpItrator,
-        memberID
-      );
-      memberID++;
+      seats = markSeatOccupied(seats, vipBooking.name, row, tmpItrator);
       tmpItrator++;
     }
     iterator += vipBooking.size;
@@ -85,17 +78,9 @@ function assignSeatsForRegularAccessible(
   let row = 0;
   for (let i = 0; i < sortedRegularOrAccessibleBookings.length; i++) {
     const raBooking = sortedRegularOrAccessibleBookings[i];
-    let memberID = 1;
     let tmpItrator = iterator;
     for (let j = 0; j < raBooking.size; j++) {
-      seats = markSeatOccupied(
-        seats,
-        raBooking.name,
-        row,
-        tmpItrator,
-        memberID
-      );
-      memberID++;
+      seats = markSeatOccupied(seats, raBooking.name, row, tmpItrator);
       tmpItrator++;
     }
     iterator += raBooking.size;
@@ -167,12 +152,9 @@ function handleRegularBookings() {
     "R"
   );
 
-  console.log("sortedRegularBookings", sortedRegularBookings);
-
   let seatOverflowed = false;
   let lastRowIndexUsed = 0;
   while (!seatOverflowed) {
-    console.log("lopping");
     for (let i = 0; i < sortedRegularBookings.length; i++) {
       let prevGroupName = sortedRegularBookings[i - 1]?.name;
       let resultForConsecutiveSeats = null;
@@ -207,24 +189,20 @@ function handleRegularBookings() {
           maxConsecutiveSeats,
           sortedRegularBookings
         );
-        console.log("Yeta aayo!");
         seatOverflowed = false;
         break; // we will run another round of loop to arrange the seats
       }
       // assigning the seats
       let iterator = resultForConsecutiveSeats.startColumnIndex;
       row = resultForConsecutiveSeats.startRowIndex;
-      let memberID = 1;
       let tmpItrator = iterator;
       for (let j = 0; j < sortedRegularBookings[i].size; j++) {
         seats = markSeatOccupied(
           seats,
           sortedRegularBookings[i].name,
           row,
-          tmpItrator,
-          memberID
+          tmpItrator
         );
-        memberID++;
         tmpItrator++;
       }
       seatOverflowed = true;
@@ -239,11 +217,6 @@ function arrangeSeats() {
     handleVIPBookings();
   }
   handleRegularBookings();
-  console.log("Your current bookings \n", bookings);
-  console.log(
-    "The final arrangement of seats is as follows based on the given inputs:\n"
-  );
-  console.log(seats);
 }
 
 // Extra
@@ -253,3 +226,4 @@ function arrangeSeats() {
 // console.log(getBrokenSeats(seats));
 // Now arrange the seats
 arrangeSeats();
+console.log(seats);
