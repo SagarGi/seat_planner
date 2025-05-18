@@ -128,13 +128,14 @@ body {
   justify-content: center;
   align-items: center;
   height: 40%;
-  width: 100%;
+  width: 50%;
   text-align: center;
-  color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+  background-color: #000000;
 }
 
 .seat-panel-heading p {
-  font-size: 18px;
+  font-size: 15px;
   margin: 0;
 }
 
@@ -271,5 +272,76 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: rgb(3, 3, 3);
+}
+
+.booking-list-heading {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.booking-list-heading p {
+  font-size: 18px;
+  margin: 0;
+  color: rgb(0, 0, 0);
+}
+
+.booking-list-table {
+  max-height: 300px; /* or whatever height you prefer */
+  overflow-y: auto;
+  margin-top: 30px;
+}
+
+.booking-list-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.booking-list-table th,
+.booking-list-table td {
+  border: 1px solid #ddd;
+  padding: 2px;
+  text-align: center;
+  font-size: 10px;
+  background-color: white;
+}
+
+.booking-list-table thead {
+  position: sticky;
+  top: 0;
+  background-color: #f9f9f9;
+  z-index: 1;
+}
+
+.delete-btn {
+  color: rgb(255, 0, 0);
+  border: none;
+  padding: 2px 5px;
+  cursor: pointer;
+  font-size: 10px;
+  background: none;
+}
+
+.arrange-and-reset-seat {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.arrange-and-reset-seat button {
+  flex: 1; /* Makes each button take 50% of the container width */
+  padding: 10px;
+  font-size: 11px;
+  background-color: #000000;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.arrange-and-reset-seat button:hover {
+  background-color: #009b22;
 }

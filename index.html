@@ -7,7 +7,7 @@
       href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./src/style.css" />
   </head>
   <body>
     <div class="container">
@@ -86,9 +86,29 @@
             </div>
           </div>
           <div class="seat-panel-content2">
-            <div class="booking-list-heading"></div>
-            <div class="booking-list-table"></div>
-            <div class="arrange-and-reset-seat"></div>
+            <div class="booking-list-heading">
+              <p>Booking List</p>
+            </div>
+            <div class="booking-list-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>S.N.</th>
+                    <th>Booking ID</th>
+                    <th>Seat Type</th>
+                    <th>Size</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="bookingTableBody">
+                  <!-- Booking entries will be inserted here -->
+                </tbody>
+              </table>
+            </div>
+            <div class="arrange-and-reset-seat">
+              <button id="arrangeBtn">Arrange Seats</button>
+              <button id="resetBtn">Reset Seats</button>
+            </div>
           </div>
         </div>
       </div>
@@ -146,6 +166,56 @@
         );
 
         form.reset(); // reset the form after alert
+      });
+    });
+
+    // table values:
+    document.addEventListener("DOMContentLoaded", function () {
+      const bookingData = [
+        { name: "b1", seatType: "V", size: 2 },
+        { name: "b2", seatType: "R", size: 4 },
+        { name: "b3", seatType: "A", size: 1 },
+        { name: "b4", seatType: "RA", size: 5 },
+        { name: "b5", seatType: "V", size: 3 },
+        { name: "b6", seatType: "R", size: 2 },
+        { name: "b7", seatType: "R", size: 1 },
+        { name: "b1", seatType: "V", size: 2 },
+        { name: "b2", seatType: "R", size: 4 },
+        { name: "b3", seatType: "A", size: 1 },
+        { name: "b4", seatType: "RA", size: 5 },
+        { name: "b5", seatType: "V", size: 3 },
+        { name: "b6", seatType: "R", size: 2 },
+        { name: "b7", seatType: "R", size: 1 },
+        { name: "b1", seatType: "V", size: 2 },
+        { name: "b2", seatType: "R", size: 4 },
+        { name: "b3", seatType: "A", size: 1 },
+        { name: "b4", seatType: "RA", size: 5 },
+        { name: "b5", seatType: "V", size: 3 },
+        { name: "b6", seatType: "R", size: 2 },
+        { name: "b7", seatType: "R", size: 1 },
+      ];
+
+      const tableBody = document.getElementById("bookingTableBody");
+
+      bookingData.forEach((booking, index) => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${booking.name}</td>
+        <td>${booking.seatType}</td>
+        <td>${booking.size}</td>
+        <td>${'<button class="delete-btn">Cancel</button>'}</td>
+      `;
+
+        tableBody.appendChild(row);
+      });
+
+      // Add delete functionality
+      tableBody.addEventListener("click", function (e) {
+        if (e.target.classList.contains("delete-btn")) {
+          e.target.closest("tr").remove();
+        }
       });
     });
   </script>
