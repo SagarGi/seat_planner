@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Seat Planner Simulator</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="left-container">
+        <div class="stage-wrapper">
+          <div class="stage-heading">
+            <p>Stage</p>
+          </div>
+        </div>
+        <div class="seat-wrapper">
+          <div id="seat-grid"></div>
+        </div>
+        <div class="made-with">
+          <p>Made with ❤️ by Gurung Sagar (Student Id: 33147045)</p>
+        </div>
+      </div>
+      <div class="right-container">
+        <div class="seat-panel-heading-wrapper">
+          <div class="seat-panel-heading">
+            <p>Seat Planner Simulator</p>
+          </div>
+        </div>
+        <div class="seat-panel-content-wrapper">
+          <div class="seat-panel-content1">
+            <div class="seat-type-display">
+              <div class="seat-type">
+                <div class="color-box" style="background-color: #000a9b"></div>
+                <span>VIP</span>
+              </div>
+              <div class="seat-type">
+                <div class="color-box" style="background-color: #37ff52"></div>
+                <span>Accessible/Priority</span>
+              </div>
+              <div class="seat-type">
+                <div class="color-box" style="background-color: #000000"></div>
+                <span>Broken</span>
+              </div>
+              <div class="seat-type">
+                <div class="color-box" style="background-color: #4b4b4b"></div>
+                <span>Available</span>
+              </div>
+              <div class="seat-type">
+                <div class="color-box" style="background-color: #cc0000"></div>
+                <span>Occupied</span>
+              </div>
+            </div>
+            <div class="admin-or-staff">
+              <p>Operate as:</p>
+              <label class="radio-green">
+                <input type="radio" name="role" value="admin" />
+                Admin
+              </label>
+              <label class="radio-green">
+                <input type="radio" name="role" value="staff" checked />
+                Staff
+              </label>
+            </div>
+            <div class="book-input">
+              <form id="bookingForm" class="book-input-form">
+                <label for="numPeople">Number of People:</label>
+                <input type="number" id="numPeople" name="numPeople" min="1" />
+                <label for="seatType">Select Seat Type:</label>
+                <select id="seatType" name="seatType">
+                  <option value="regular">Regular</option>
+                  <option value="vip">VIP</option>
+                  <option value="accessible">Accessible</option>
+                </select>
+                <br />
+                <label for="preferredSeat"
+                  >Seat Preferred (Elderly Only):</label
+                >
+                <input type="text" id="preferredSeat" name="preferredSeat" />
+
+                <button type="submit" id="bookBtn">Book Seat</button>
+              </form>
+            </div>
+          </div>
+          <div class="seat-panel-content2">
+            <div class="booking-list-heading"></div>
+            <div class="booking-list-table"></div>
+            <div class="arrange-and-reset-seat"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    // Wait until DOM is loaded
+    document.addEventListener("DOMContentLoaded", function () {
+      const seatGrid = document.getElementById("seat-grid");
+      seatGrid.classList.add("seat-grid");
+
+      const rows = ["A", "B", "C", "D", "E", "F", "G"];
+      const cols = 10;
+
+      for (let i = 0; i < rows.length * cols; i++) {
+        const seat = document.createElement("div");
+        seat.classList.add("seat");
+        seat.textContent = rows[Math.floor(i / cols)] + ((i % cols) + 1);
+        // Add click event to each seat
+        seat.addEventListener("click", () => {
+          alert(`Seat clicked: ${seat.textContent}`);
+          // You can replace alert with any custom logic
+        });
+        seatGrid.appendChild(seat);
+      }
+    });
+
+    // radio button functionality
+    document.addEventListener("DOMContentLoaded", () => {
+      const roleRadios = document.querySelectorAll('input[name="role"]');
+
+      roleRadios.forEach((radio) => {
+        radio.addEventListener("change", (event) => {
+          alert("Selected role: " + event.target.value);
+        });
+      });
+    });
+
+    // form book button
+    document.addEventListener("DOMContentLoaded", function () {
+      const form = document.getElementById("bookingForm");
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault(); // prevent page reload
+
+        const numPeople = document.getElementById("numPeople").value;
+        const seatType = document.getElementById("seatType").value;
+        const preferredSeat = document.getElementById("preferredSeat").value;
+
+        alert(
+          `Booking Details:\n\n` +
+            `Number of People: ${numPeople}\n` +
+            `Seat Type: ${seatType}\n` +
+            `Preferred Seat: ${preferredSeat}`
+        );
+
+        form.reset(); // reset the form after alert
+      });
+    });
+  </script>
+</html>

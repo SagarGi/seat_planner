@@ -1,0 +1,275 @@
+/* Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  font-family: "Roboto Mono", monospace;
+  height: 100%;
+  width: 100%;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.left-container {
+  width: 55%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.stage-wrapper {
+  height: 20%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.stage-heading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40%;
+  width: 85%;
+  text-align: center;
+  background: black;
+  color: white;
+}
+
+.stage-heading p {
+  font-size: 12px;
+  margin: 0;
+}
+
+.seat-wrapper {
+  height: 80%; /* you already have this */
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden; /* prevent overflow */
+  display: flex; /* enable flex to help children size */
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: white;
+}
+
+.seat-grid {
+  flex-grow: 1; /* grow to fill parent */
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  gap: 10px;
+  /* fix width to fit seats nicely */
+  box-sizing: border-box;
+  width: 87%;
+  margin-left: 10px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  overflow-y: auto; /* enable vertical scroll if needed */
+  /* optional: smooth scrolling */
+  scroll-behavior: smooth;
+}
+
+.seat {
+  background-color: #757575;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 9px;
+  cursor: pointer;
+  user-select: none;
+  aspect-ratio: 1 / 1;
+  min-width: 0;
+  max-width: 40px; /* limit seat size */
+  max-height: 40px;
+}
+
+.made-with {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+  color: rgb(0, 0, 0);
+}
+
+.made-with p {
+  font-size: 12px;
+  margin: 0;
+}
+
+/* Right container - 40% */
+.right-container {
+  width: 45%;
+  padding: 20px;
+}
+
+.seat-panel-heading-wrapper {
+  height: 20%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.seat-panel-heading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40%;
+  width: 100%;
+  text-align: center;
+  color: rgb(0, 0, 0);
+}
+
+.seat-panel-heading p {
+  font-size: 18px;
+  margin: 0;
+}
+
+.seat-panel-content-wrapper {
+  height: 80%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.seat-panel-content1 {
+  width: 40%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.seat-type-display {
+  display: block;
+}
+.seat-type {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.color-box {
+  width: 20px;
+  height: 20px;
+}
+
+.seat-panel-content1 span {
+  font-size: 10px;
+  color: #000000;
+  margin: 8px;
+}
+
+.admin-or-staff p {
+  margin-top: 17px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.radio-green {
+  display: flex; /* flex for label */
+  align-items: center;
+  margin-bottom: 12px; /* space between radio buttons */
+  cursor: pointer;
+  color: #000000; /* Dark green text */
+  font-size: 10px;
+}
+
+.radio-green input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #2e7d32;
+  border-radius: 50%;
+  margin-right: 10px;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.radio-green input[type="radio"]:checked {
+  background-color: #2e7d32;
+  border-color: #2e7d32;
+}
+
+.radio-green input[type="radio"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 6px;
+  height: 6px;
+  background: white;
+  border-radius: 50%;
+}
+
+.book-input {
+  margin-top: 15px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.book-input-form {
+  height: 100%;
+  width: 100%;
+  display: block;
+  flex-direction: column;
+}
+
+.book-input-form input,
+.book-input-form select {
+  padding: 4px 15px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  width: 100%;
+}
+
+#bookBtn {
+  padding: 10px;
+  background-color: rgb(0, 0, 0);
+  color: white;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 100%;
+}
+
+#bookBtn:hover {
+  background-color: darkgreen;
+}
+
+.book-input label {
+  font-size: 10px;
+  color: #000000;
+}
+
+.seat-panel-content2 {
+  width: 60%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: rgb(3, 3, 3);
+}
