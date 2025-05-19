@@ -46,7 +46,7 @@
                 <span>Broken</span>
               </div>
               <div class="seat-type">
-                <div class="color-box" style="background-color: #4b4b4b"></div>
+                <div class="color-box" style="background-color: #a5a5a5"></div>
                 <span>Available</span>
               </div>
               <div class="seat-type">
@@ -71,9 +71,9 @@
                 <input type="number" id="numPeople" name="numPeople" min="1" />
                 <label for="seatType">Select Seat Type:</label>
                 <select id="seatType" name="seatType">
-                  <option value="regular">Regular</option>
-                  <option value="vip">VIP</option>
-                  <option value="accessible">Accessible</option>
+                  <option value="R">Regular</option>
+                  <option value="V">VIP</option>
+                  <option value="RA">Accessible</option>
                 </select>
                 <br />
                 <label for="preferredSeat"
@@ -114,109 +114,5 @@
       </div>
     </div>
   </body>
-  <script>
-    // Wait until DOM is loaded
-    document.addEventListener("DOMContentLoaded", function () {
-      const seatGrid = document.getElementById("seat-grid");
-      seatGrid.classList.add("seat-grid");
-
-      const rows = ["A", "B", "C", "D", "E", "F", "G"];
-      const cols = 10;
-
-      for (let i = 0; i < rows.length * cols; i++) {
-        const seat = document.createElement("div");
-        seat.classList.add("seat");
-        seat.textContent = rows[Math.floor(i / cols)] + ((i % cols) + 1);
-        // Add click event to each seat
-        seat.addEventListener("click", () => {
-          alert(`Seat clicked: ${seat.textContent}`);
-          // You can replace alert with any custom logic
-        });
-        seatGrid.appendChild(seat);
-      }
-    });
-
-    // radio button functionality
-    document.addEventListener("DOMContentLoaded", () => {
-      const roleRadios = document.querySelectorAll('input[name="role"]');
-
-      roleRadios.forEach((radio) => {
-        radio.addEventListener("change", (event) => {
-          alert("Selected role: " + event.target.value);
-        });
-      });
-    });
-
-    // form book button
-    document.addEventListener("DOMContentLoaded", function () {
-      const form = document.getElementById("bookingForm");
-
-      form.addEventListener("submit", function (e) {
-        e.preventDefault(); // prevent page reload
-
-        const numPeople = document.getElementById("numPeople").value;
-        const seatType = document.getElementById("seatType").value;
-        const preferredSeat = document.getElementById("preferredSeat").value;
-
-        alert(
-          `Booking Details:\n\n` +
-            `Number of People: ${numPeople}\n` +
-            `Seat Type: ${seatType}\n` +
-            `Preferred Seat: ${preferredSeat}`
-        );
-
-        form.reset(); // reset the form after alert
-      });
-    });
-
-    // table values:
-    document.addEventListener("DOMContentLoaded", function () {
-      const bookingData = [
-        { name: "b1", seatType: "V", size: 2 },
-        { name: "b2", seatType: "R", size: 4 },
-        { name: "b3", seatType: "A", size: 1 },
-        { name: "b4", seatType: "RA", size: 5 },
-        { name: "b5", seatType: "V", size: 3 },
-        { name: "b6", seatType: "R", size: 2 },
-        { name: "b7", seatType: "R", size: 1 },
-        { name: "b1", seatType: "V", size: 2 },
-        { name: "b2", seatType: "R", size: 4 },
-        { name: "b3", seatType: "A", size: 1 },
-        { name: "b4", seatType: "RA", size: 5 },
-        { name: "b5", seatType: "V", size: 3 },
-        { name: "b6", seatType: "R", size: 2 },
-        { name: "b7", seatType: "R", size: 1 },
-        { name: "b1", seatType: "V", size: 2 },
-        { name: "b2", seatType: "R", size: 4 },
-        { name: "b3", seatType: "A", size: 1 },
-        { name: "b4", seatType: "RA", size: 5 },
-        { name: "b5", seatType: "V", size: 3 },
-        { name: "b6", seatType: "R", size: 2 },
-        { name: "b7", seatType: "R", size: 1 },
-      ];
-
-      const tableBody = document.getElementById("bookingTableBody");
-
-      bookingData.forEach((booking, index) => {
-        const row = document.createElement("tr");
-
-        row.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${booking.name}</td>
-        <td>${booking.seatType}</td>
-        <td>${booking.size}</td>
-        <td>${'<button class="delete-btn">Cancel</button>'}</td>
-      `;
-
-        tableBody.appendChild(row);
-      });
-
-      // Add delete functionality
-      tableBody.addEventListener("click", function (e) {
-        if (e.target.classList.contains("delete-btn")) {
-          e.target.closest("tr").remove();
-        }
-      });
-    });
-  </script>
+  <script type="module" src="./src/js/seat.js"></script>
 </html>

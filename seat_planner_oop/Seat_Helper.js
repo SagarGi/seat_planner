@@ -6,6 +6,7 @@ export class SeatHelper {
     this.rows = ["A", "B", "C", "D", "E", "F", "G"];
     this.col = 10;
     this.numberOfSampleBookingInputs = 65;
+    this.bookings = [];
   }
 
   getInitialSeatsLayout() {
@@ -32,6 +33,10 @@ export class SeatHelper {
     }
 
     return seatGrid;
+  }
+
+  getBookings() {
+    return this.bookings;
   }
 
   getSampleBookingInputs(totalSeats) {
@@ -63,7 +68,7 @@ export class SeatHelper {
 
       const size = this.getRandomInt(1, maxSize);
 
-      bookings.push(new Booking(`b${bookingIndex++}`, size, seatType));
+      bookings.push(new Booking(`B${bookingIndex++}`, size, seatType));
 
       currentSeats += size;
 

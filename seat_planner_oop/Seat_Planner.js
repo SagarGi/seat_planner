@@ -1,12 +1,16 @@
 import { SeatHelper } from "./Seat_Helper.js";
 
 export class SeatPlanner {
-  constructor() {
-    this.seatHelper = new SeatHelper();
-    this.seats = this.seatHelper.getInitialSeatsLayout();
-    this.bookings = this.seatHelper.getSampleBookingInputs(
-      this.seatHelper.numberOfSampleBookingInputs
-    );
+  constructor(seatHelper, seats, bookings) {
+    this.seatHelper = seatHelper;
+    this.seats = seats;
+    // this is for console
+    // this.bookings = this.seatHelper.getSampleBookingInputs(
+    //   this.seatHelper.numberOfSampleBookingInputs
+    // );
+    // for UI
+    console.log("Bookings", bookings);
+    this.bookings = bookings;
   }
 
   markSeatBroken(row, column) {
