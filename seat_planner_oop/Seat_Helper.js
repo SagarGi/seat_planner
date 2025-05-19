@@ -39,6 +39,24 @@ export class SeatHelper {
     return this.bookings;
   }
 
+  makeRandomBrokenSeats(globalSeats, count = 5) {
+    const totalRows = globalSeats.length;
+    const totalCols = globalSeats[0].length;
+    let marked = 0;
+
+    while (marked < count) {
+      const row = Math.floor(Math.random() * totalRows);
+      const col = Math.floor(Math.random() * totalCols);
+      const seat = globalSeats[row][col];
+
+      if (!seat.isOccupied && !seat.isBroken) {
+        seat.markBroken();
+        marked++;
+      }
+    }
+    return globalSeats;
+  }
+
   getSampleBookingInputs(totalSeats) {
     const bookings = [];
     let currentSeats = 0;
@@ -89,6 +107,10 @@ export class SeatHelper {
 
   isBookingAvailable(bookings, seatType) {
     return this.getBookingsForSeatType(bookings, seatType).length > 0;
+  }
+
+  getBookingsForPreferredSeat(bookings) {
+    return bookings.filter((booking) => booking.seatPreference !== "");
   }
 
   getBookingsForSeatType(bookings, seatType) {

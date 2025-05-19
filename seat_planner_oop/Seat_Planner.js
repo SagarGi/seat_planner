@@ -9,7 +9,6 @@ export class SeatPlanner {
     //   this.seatHelper.numberOfSampleBookingInputs
     // );
     // for UI
-    console.log("Bookings", bookings);
     this.bookings = bookings;
   }
 
@@ -27,8 +26,10 @@ export class SeatPlanner {
     let marked = 0;
 
     while (marked < count) {
-      const row = Math.floor(Math.random() * totalRows);
+      // ✅ Skip front row (row index 0)
+      const row = Math.floor(Math.random() * (totalRows - 1)) + 1; // Ensures row >= 1
       const col = Math.floor(Math.random() * totalCols);
+
       const seat = this.seats[row][col];
 
       if (!seat.isOccupied && !seat.isBroken) {
@@ -44,7 +45,11 @@ export class SeatPlanner {
     for (const vipBooking of sortedVIPBookings) {
       let tmpIterator = iterator;
       for (let j = 0; j < vipBooking.size; j++) {
-        if (this.seats[row] && this.seats[row][tmpIterator]) {
+        if (
+          this.seats[row] &&
+          this.seats[row][tmpIterator] &&
+          vipBooking.seatPreference === ""
+        ) {
           this.seats[row][tmpIterator].markOccupied(vipBooking.name);
           tmpIterator++;
         } else {
@@ -67,7 +72,11 @@ export class SeatPlanner {
     for (const raBooking of sortedRegularOrAccessibleBookings) {
       let tmpIterator = iterator;
       for (let j = 0; j < raBooking.size; j++) {
-        if (this.seats[row] && this.seats[row][tmpIterator]) {
+        if (
+          this.seats[row] &&
+          this.seats[row][tmpIterator] &&
+          raBooking.seatPreference === ""
+        ) {
           this.seats[row][tmpIterator].markOccupied(raBooking.name);
           tmpIterator++;
         } else {
@@ -102,6 +111,34 @@ export class SeatPlanner {
           "V"
         );
       this.assignSeatsForVIP(sortedVIPBookings);
+    }
+  }
+
+  handlePrefferedSeats() {
+    // this one should be first place since it is the preferred seat.
+    // does not matter if its VIP or Regular or Accessible
+    // then we assign the preferred seats first
+    // As of now we can set preferred seat only one person at a time
+    const sortedPreferredBookings = this.seatHelper.getBookingsForPreferredSeat(
+      this.bookings
+    );
+    if (sortedPreferredBookings.length === 0) {
+      return;
+    }
+    for (const booking of sortedPreferredBookings) {
+      const seatId = booking.seatPreference.toUpperCase();
+      // mark seat occupied based on seatId
+      for (let i = 0; i < this.seats.length; i++) {
+        for (let j = 0; j < this.seats[i].length; j++) {
+          if (
+            this.seats[i][j].seatId === seatId &&
+            !this.seats[i][j].isOccupied &&
+            !this.seats[i][j].isBroken
+          ) {
+            this.seats[i][j].markOccupied(booking.name);
+          }
+        }
+      }
     }
   }
 
@@ -186,7 +223,11 @@ export class SeatPlanner {
         const row = resultForConsecutiveSeats.startRowIndex;
         let tmpIterator = iterator;
         for (let j = 0; j < sortedRegularBookings[i].size; j++) {
-          if (this.seats[row] && this.seats[row][tmpIterator]) {
+          if (
+            this.seats[row] &&
+            this.seats[row][tmpIterator] &&
+            sortedRegularBookings[i].seatPreference === ""
+          ) {
             this.seats[row][tmpIterator].markOccupied(
               sortedRegularBookings[i].name
             );
@@ -205,6 +246,12 @@ export class SeatPlanner {
   }
 
   arrangeSeats() {
+    if (
+      this.seatHelper.getBookingsForPreferredSeat(this.bookings).length !== 0
+    ) {
+      console.log(this.seats);
+      this.handlePrefferedSeats();
+    }
     if (this.seatHelper.isBookingAvailable(this.bookings, "V")) {
       this.handleVIPBookings();
     }

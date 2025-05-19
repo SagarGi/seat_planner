@@ -345,3 +345,21 @@ body {
 .arrange-and-reset-seat button:hover {
   background-color: #009b22;
 }
+
+.random-broken-checkbox {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  justify-content: center;
+  font-size: 10px;
+}
+
+.random-broken-checkbox,
+label {
+  margin-top: 2px;
+}
+
+.random-broken-checkbox input[type="checkbox"] {
+  color: white;
+  margin: 5px;
+}
