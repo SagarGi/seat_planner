@@ -26,7 +26,6 @@ export class SeatPlanner {
     let marked = 0;
 
     while (marked < count) {
-      // ✅ Skip front row (row index 0)
       const row = Math.floor(Math.random() * (totalRows - 1)) + 1; // Ensures row >= 1
       const col = Math.floor(Math.random() * totalCols);
 
@@ -142,32 +141,58 @@ export class SeatPlanner {
     }
   }
 
-  handleRegularBookings() {
-    if (this.seatHelper.isBookingAvailable(this.bookings, "RA")) {
-      const totalSizeOfRegularAccessibleBookings =
-        this.seatHelper.getSizeForSeatTypeFromBookings(this.bookings, "RA");
-      const accessibleSeatsAvailable =
-        this.seatHelper.getNumberOfAccessibleSeats();
-      if (totalSizeOfRegularAccessibleBookings > accessibleSeatsAvailable) {
-        console.error(
-          `In Booking \n ${JSON.stringify(
-            this.seatHelper.getBookingsForSeatType(this.bookings, "RA")
-          )} \n` +
-            `There are only ${accessibleSeatsAvailable} Accessible seats available but found ${totalSizeOfRegularAccessibleBookings},
+  handleRegularAccessibleBookings() {
+    const totalSizeOfRegularAccessibleBookings =
+      this.seatHelper.getSizeForSeatTypeFromBookings(this.bookings, "RA");
+    const accessibleSeatsAvailable =
+      this.seatHelper.getNumberOfAccessibleSeats();
+    if (totalSizeOfRegularAccessibleBookings > accessibleSeatsAvailable) {
+      console.error(
+        `In Booking \n ${JSON.stringify(
+          this.seatHelper.getBookingsForSeatType(this.bookings, "RA")
+        )} \n` +
+          `There are only ${accessibleSeatsAvailable} Accessible seats available but found ${totalSizeOfRegularAccessibleBookings},
           Please go with the regular seats if possible`
-        );
-        return;
-      }
-      const sortedRegularAccessibleBookings =
-        this.seatHelper.getBookingsOfSeatTypeOrderedBySizeDescending(
-          this.bookings,
-          "RA"
-        );
-      this.assignSeatsForRegularAccessible(
-        sortedRegularAccessibleBookings,
-        this.seatHelper.col - accessibleSeatsAvailable
       );
+      return;
     }
+    const sortedRegularAccessibleBookings =
+      this.seatHelper.getBookingsOfSeatTypeOrderedBySizeDescending(
+        this.bookings,
+        "RA"
+      );
+    this.assignSeatsForRegularAccessible(
+      sortedRegularAccessibleBookings,
+      this.seatHelper.col - accessibleSeatsAvailable
+    );
+  }
+
+  handleRegularBookings() {
+    // if (this.seatHelper.isBookingAvailable(this.bookings, "RA")) {
+    //   const totalSizeOfRegularAccessibleBookings =
+    //     this.seatHelper.getSizeForSeatTypeFromBookings(this.bookings, "RA");
+    //   const accessibleSeatsAvailable =
+    //     this.seatHelper.getNumberOfAccessibleSeats();
+    //   if (totalSizeOfRegularAccessibleBookings > accessibleSeatsAvailable) {
+    //     console.error(
+    //       `In Booking \n ${JSON.stringify(
+    //         this.seatHelper.getBookingsForSeatType(this.bookings, "RA")
+    //       )} \n` +
+    //         `There are only ${accessibleSeatsAvailable} Accessible seats available but found ${totalSizeOfRegularAccessibleBookings},
+    //       Please go with the regular seats if possible`
+    //     );
+    //     return;
+    //   }
+    //   const sortedRegularAccessibleBookings =
+    //     this.seatHelper.getBookingsOfSeatTypeOrderedBySizeDescending(
+    //       this.bookings,
+    //       "RA"
+    //     );
+    //   this.assignSeatsForRegularAccessible(
+    //     sortedRegularAccessibleBookings,
+    //     this.seatHelper.col - accessibleSeatsAvailable
+    //   );
+    // }
 
     let sortedRegularBookings =
       this.seatHelper.getBookingsOfSeatTypeOrderedBySizeDescending(
@@ -249,13 +274,17 @@ export class SeatPlanner {
     if (
       this.seatHelper.getBookingsForPreferredSeat(this.bookings).length !== 0
     ) {
-      console.log(this.seats);
       this.handlePrefferedSeats();
     }
     if (this.seatHelper.isBookingAvailable(this.bookings, "V")) {
       this.handleVIPBookings();
     }
-    this.handleRegularBookings();
+    if (this.seatHelper.isBookingAvailable(this.bookings, "RA")) {
+      this.handleRegularAccessibleBookings();
+    }
+    if (this.seatHelper.isBookingAvailable(this.bookings, "R")) {
+      this.handleRegularBookings();
+    }
   }
 
   getOccupiedSeats() {

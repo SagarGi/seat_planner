@@ -11,21 +11,14 @@ let seatPlanner = new SeatPlanner(
 );
 
 seatHelper.bookings.push(
-  new Booking("B5", 1, "R"),
-  new Booking("B4", 1, "R"),
-  new Booking("B3", 1, "R"),
-  new Booking("B2", 1, "R"),
-  new Booking("B1", 1, "R"),
   new Booking("VIP3", 2, "V"),
   new Booking("VIP4", 5, "V")
 );
-globalSeats = seatPlanner.seats;
 seatPlanner = new SeatPlanner(
   seatHelper,
   seatHelper.getInitialSeatsLayout(),
   seatHelper.getBookings()
 );
-seatPlanner.randomlyMarkBrokenSeats(5);
 seatPlanner.arrangeSeats();
 // console.log(seatPlanner.bookings);
 const finalSeats = seatPlanner.seats;
