@@ -11,3 +11,4 @@ package-lock.json
 stylelint.cache
 dist/
 build/
+coverage/
